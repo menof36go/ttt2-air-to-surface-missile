@@ -1,0 +1,13 @@
+{
+	"title"		:	"[TTT/2] Air-To-Surface Missile",
+	"type"		:	"ServerContent",
+	"tags"		:	[ "fun" ],
+	"ignore"	:
+	[
+		"*.psd",
+		"*.vcproj",
+		"*.svn*",
+		"*.git*",
+		"id.txt"
+	]
+}
