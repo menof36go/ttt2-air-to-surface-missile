@@ -768,12 +768,9 @@ if CLIENT then
                 surface.SetFont("Default")
                 surface.SetTextColor(64,64,64,255)
 
-                local tEnts = ents.GetAll()
+                local tEnts = player.GetAll()
                 for _,ent in pairs(tEnts) do
-                    if (IsValid(ent) and (ent:IsPlayer() or ent:IsNPC())) then
-                        if (ent:Health() <= 0) then
-                            return
-                        end
+                    if (IsValid(ent)) then
                         local vPos = ent:GetPos()+Vector(0,0,0.5*ent:OBBMaxs().z)
                         local scrPos = vPos:ToScreen()
                         if self:CheckFriendly(ent) then
