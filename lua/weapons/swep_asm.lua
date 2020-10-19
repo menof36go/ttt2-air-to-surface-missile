@@ -789,6 +789,18 @@ if CLIENT then
                         surface.DrawOutlinedRect(scrPos.x-16, scrPos.y-16,32,32)
                     end
                 end
+		surface.SetTextColor(0,255,0,255)
+		surface.SetTextPos(24,108)
+		surface.SetFont("CloseCaption_Bold")
+		surface.DrawText("You are green")
+		surface.SetTextPos(24,132)
+		surface.SetTextColor(0,0,255,255)
+		surface.SetFont("CloseCaption_Bold")
+		surface.DrawText("Your teammates are blue")
+		surface.SetTextColor(255,0,0,255)
+		surface.SetTextPos(24,156)
+		surface.SetFont("CloseCaption_Bold")
+		surface.DrawText("Your enemies are red")
             end
         end
     end
