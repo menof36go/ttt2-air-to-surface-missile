@@ -366,7 +366,7 @@ if SERVER then
             end
             net.Start("ASM-Update")
             net.WriteDouble(send)
-            net.WriteEntity(self.Weapon)
+            net.WriteEntity(self)
             net.WriteInt(status or 0, 32)
             net.Send(self.Owner)
         end
