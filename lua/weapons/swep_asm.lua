@@ -105,9 +105,9 @@ function SWEP:Initialize()
         language.Add("sent_asm","Air-to-surface Missile")
         hook.Add("HUDPaint","ASMSwepDrawHUD", function() 
             if IsValid(self) then
-                if IsValid(self.Owner) then
+                if IsValid(self:GetOwner()) then
                     if IsValid(LocalPlayer()) then
-                        if (self.Owner == LocalPlayer()) then
+                        if (self:GetOwner() == LocalPlayer()) then
                             if (type(self.DrawInactiveHUD) == "function") then
                                 self:DrawInactiveHUD()
                             else
@@ -129,11 +129,11 @@ function SWEP:OnDrop()
     self:UnlockPlayer()
     if IsValid(self.Camera) then
         debugPrint("Air-To-Surface-Missile: OnDrop - Camera valid")
-        if IsValid(self.Owner) then
+        if IsValid(self:GetOwner()) then
             debugPrint("Air-To-Surface-Missile: OnDrop - Owner valid")
-            if (self.Owner:GetViewEntity() == self.Camera) then
+            if (self:GetOwner():GetViewEntity() == self.Camera) then
                 debugPrint("Air-To-Surface-Missile: OnDrop - Reset View Entity")
-                self.Owner:SetViewEntity(self.Owner)
+                self:GetOwner():SetViewEntity(self:GetOwner())
             end
         end
         self.Camera:Remove()
@@ -146,11 +146,11 @@ function SWEP:OnRemove()
         self:UnlockPlayer()
         if IsValid(self.Camera) then
             debugPrint("Air-To-Surface-Missile: OnRemove - Camera valid")
-            if IsValid(self.Owner) then
+            if IsValid(self:GetOwner()) then
                 debugPrint("Air-To-Surface-Missile: OnRemove - Owner valid")
-                if (self.Owner:GetViewEntity() == self.Camera) then
+                if (self:GetOwner():GetViewEntity() == self.Camera) then
                     debugPrint("Air-To-Surface-Missile: OnRemove - Reset View Entity")
-                    self.Owner:SetViewEntity(self.Owner)
+                    self:GetOwner():SetViewEntity(self:GetOwner())
                 end
             end
             self.Camera:Remove()
@@ -208,14 +208,14 @@ if SERVER then
         if(self.Status == 0) then
             if self.Delay > CurTime() then return end
 
-            local tr = self.Owner:GetEyeTrace()
+            local tr = self:GetOwner():GetEyeTrace()
             local vPos = self:FindInitialPos(tr.HitPos)
 
             if vPos then
                 self:SpawnCamera(vPos)
-                self.Owner:ConCommand("firstperson")
+                self:GetOwner():ConCommand("firstperson")
                 self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-                self.Owner:SetAnimation(PLAYER_ATTACK1)
+                self:GetOwner():SetAnimation(PLAYER_ATTACK1)
                 self:EmitSound(SndRequested)
                 
                 self:LockPlayer()
@@ -235,8 +235,8 @@ if SERVER then
 
     function SWEP:Equip()
         --if !self.ModelC4 then self:SendMessage(0) end
-        if IsValid(self.Owner) then
-            self.UserID = self.Owner:UserID()
+        if IsValid(self:GetOwner()) then
+            self.UserID = self:GetOwner():UserID()
         end
     end
 
@@ -249,7 +249,7 @@ if SERVER then
             self:SetStatus(2,0.5)
         -- Try start missile
         elseif self.Status == 2 then
-            self.Owner:SetViewEntity(self.Camera)
+            self:GetOwner():SetViewEntity(self.Camera)
             self:SendWeaponAnim(ACT_VM_IDLE)
             self:SetStatus(3,0)
         elseif (self.Status>2) &&(self.Status<6) then
@@ -271,7 +271,7 @@ if SERVER then
  
             if (self.Status==3) then --[[unused]] end
             if self.Status < 5 then
-                if self.Owner:KeyDown(IN_ATTACK) or self.Owner:KeyDown(IN_USE) or (self.CountdownEnd - CurTime() <= 0) then
+                if self:GetOwner():KeyDown(IN_ATTACK) or self:GetOwner():KeyDown(IN_USE) or (self.CountdownEnd - CurTime() <= 0) then
                     if not IsValid(self.Missile) then
                         self:SpawnMissile(pos)
                         -- We skip the slow stage and immediately go to the boost stage
@@ -282,11 +282,11 @@ if SERVER then
                         self.Camera:SetVelocity(-self.Camera:GetVelocity())
                     end
                 end
-                if (AllowAbort and self.Owner:KeyDown(IN_ATTACK2)) then
+                if (AllowAbort and self:GetOwner():KeyDown(IN_ATTACK2)) then
                     if (IsValid(self.Missile) and AllowAbortMidFlight) then
                         self:MissileEndPhase()
                     elseif (not IsValid(self.Missile)) then
-                        self.Owner:SetViewEntity(self.Owner)
+                        self:GetOwner():SetViewEntity(self:GetOwner())
                         self:UnlockPlayer()
                         self:SetStatus(6,0)
                     end
@@ -296,18 +296,18 @@ if SERVER then
                     local mVel = Vector(0,0,0)
                     local kVel = Vector(0,0,0)
                     local treshold = 0.9
-                    local cmd = self.Owner:GetCurrentCommand()
+                    local cmd = self:GetOwner():GetCurrentCommand()
                     local SpeedModifier = 1
                     local maxVal = 300
                     local maxValMouse = maxVal * MouseSpeedModifier
 
-                    if self.Owner:KeyDown(IN_FORWARD) then kVel=kVel+Vector(maxVal - 0.1,0,0) end
-                    if self.Owner:KeyDown(IN_BACK) then kVel=kVel+Vector(-maxVal - 0.1,0,0) end
-                    if self.Owner:KeyDown(IN_MOVELEFT) then kVel=kVel+Vector(0,maxVal - 0.1,0) end
-                    if self.Owner:KeyDown(IN_MOVERIGHT) then kVel=kVel+Vector(0,-maxVal - 0.1,0) end
-                    if self.Owner:KeyDown(IN_SPEED) then 
+                    if self:GetOwner():KeyDown(IN_FORWARD) then kVel=kVel+Vector(maxVal - 0.1,0,0) end
+                    if self:GetOwner():KeyDown(IN_BACK) then kVel=kVel+Vector(-maxVal - 0.1,0,0) end
+                    if self:GetOwner():KeyDown(IN_MOVELEFT) then kVel=kVel+Vector(0,maxVal - 0.1,0) end
+                    if self:GetOwner():KeyDown(IN_MOVERIGHT) then kVel=kVel+Vector(0,-maxVal - 0.1,0) end
+                    if self:GetOwner():KeyDown(IN_SPEED) then 
                         SpeedModifier = ShiftSpeedModifier
-                    elseif self.Owner:KeyDown(IN_WALK) then 
+                    elseif self:GetOwner():KeyDown(IN_WALK) then 
                         SpeedModifier = AltSpeedModifier
                     end
 
@@ -357,7 +357,7 @@ if SERVER then
     function SWEP:SetStatus(status,delay)
         self.Status = (status or 0)
         if delay > 0 then self.Delay = CurTime() + delay end
-        if IsValid(self.Owner) then
+        if IsValid(self:GetOwner()) then
             local send = -1
             if (status == 2) then
                 self.CountdownEnd = CurTime() + CountdownLength
@@ -368,20 +368,20 @@ if SERVER then
             net.WriteDouble(send)
             net.WriteEntity(self)
             net.WriteInt(status or 0, 32)
-            net.Send(self.Owner)
+            net.Send(self:GetOwner())
         end
     end
 
     function SWEP:SendMessage(id)
         net.Start("ASM-Msg")
         net.WriteInt(id, 32)
-        net.Send(self.Owner)
+        net.Send(self:GetOwner())
     end
     
     function SWEP:CreateCamera()
         local ent = ents.Create("prop_physics")
             ent:SetModel("models/props_junk/PopCan01a.mdl")
-            ent:SetPos(self.Owner:GetPos())
+            ent:SetPos(self:GetOwner():GetPos())
             ent:SetAngles(Angle(90,0,0))
         ent:Spawn()
         ent:Activate()
@@ -408,17 +408,17 @@ if SERVER then
         mis:Spawn()
         mis:Activate()
         mis:Launch()
-        if IsValid(self.Owner) then
+        if IsValid(self:GetOwner()) then
             if TTT2 then
-                mis.AssociatedTeam = self.Owner:GetTeam()
+                mis.AssociatedTeam = self:GetOwner():GetTeam()
             else
-                mis.AssociatedTeam = self.Owner:GetRole()
+                mis.AssociatedTeam = self:GetOwner():GetRole()
             end
-            mis.UserID = self.Owner:UserID()
+            mis.UserID = self:GetOwner():UserID()
         end
 
         if IsValid(mis) then
-            mis.Owner = self.Owner
+            mis.Owner = self:GetOwner()
             mis.SWEP = self
 
             self.Missile = mis
@@ -499,24 +499,24 @@ if SERVER then
     hook.Add("EntityTakeDamage", "ASMSetupDamage", ASMGetDmg)
 
     function SWEP:LockPlayer()
-        self.LastMoveType = self.Owner:GetMoveType()
-        self.Owner:SetMoveType(MOVETYPE_NONE)
+        self.LastMoveType = self:GetOwner():GetMoveType()
+        self:GetOwner():SetMoveType(MOVETYPE_NONE)
     end
 
     function SWEP:UnlockPlayer()
         debugPrint("Air-To-Surface-Missile: Unlock player")
-        if IsValid(self.Owner) then
-            if (self.Owner:GetMoveType() == MOVETYPE_NONE) then
+        if IsValid(self:GetOwner()) then
+            if (self:GetOwner():GetMoveType() == MOVETYPE_NONE) then
                 debugPrint("Air-To-Surface-Missile: Actually unlock player")
-                self.Owner:SetMoveType(self.LastMoveType or MOVETYPE_WALK)
+                self:GetOwner():SetMoveType(self.LastMoveType or MOVETYPE_WALK)
             end
         end
     end
 
     function SWEP:MissileEndPhase()
         debugPrint("Air-To-Surface-Missile: Missile is in air or destroyed")
-        if IsValid(self.Owner) then
-            self.Owner:SetViewEntity(self.Owner)
+        if IsValid(self:GetOwner()) then
+            self:GetOwner():SetViewEntity(self:GetOwner())
             self:UnlockPlayer()
             debugPrint("Air-To-Surface-Missile: Missile end phase - Reset View Entity")
         end
@@ -563,18 +563,18 @@ if SERVER then
     
     function SWEP:CheckFriendly(ent)
         if GetConVar("ttt_asm_show_colleagues"):GetBool() then
-            if IsValid(self.Owner) then
+            if IsValid(self:GetOwner()) then
                 local teamOwn = nil
                 if TTT2 then
-                    teamOwn = self.Owner:GetTeam()
+                    teamOwn = self:GetOwner():GetTeam()
                 else
-                    teamOwn = self.Owner:GetRole()
+                    teamOwn = self:GetOwner():GetRole()
                 end
                 return CheckFriendly(teamOwn,ent)
             end
             return false
         else
-            if ent:Disposition(self.Owner) == 1 then
+            if ent:Disposition(self:GetOwner()) == 1 then
                 return false 
             end
             return true
@@ -673,12 +673,12 @@ if CLIENT then
 
     function SWEP:CheckFriendly(ent)
         if GetConVar("ttt_asm_show_colleagues"):GetBool() then
-            if IsValid(self.Owner) then
+            if IsValid(self:GetOwner()) then
                 local teamOwn = nil
                 if TTT2 then
-                    teamOwn = self.Owner:GetTeam()
+                    teamOwn = self:GetOwner():GetTeam()
                 else
-                    teamOwn = self.Owner:GetRole()
+                    teamOwn = self:GetOwner():GetRole()
                 end
                 return CheckFriendly(teamOwn,ent)
             end
@@ -751,7 +751,7 @@ if CLIENT then
                 surface.DrawText(tostring(math.Round(pos.x)).." "..tostring(math.Round(pos.y)).." "..tostring(math.Round(pos.z)))
 
                 surface.SetTextPos(24,40)
-                local dist = self.Owner:GetEyeTrace().HitPos:Distance(pos-Vector(0,0,pos.z))
+                local dist = self:GetOwner():GetEyeTrace().HitPos:Distance(pos-Vector(0,0,pos.z))
                 surface.DrawText(tostring(math.Round(dist)).." : "..tostring(math.Round(camera:GetVelocity():Length())))
 
                 surface.SetTextPos(24,64)
@@ -847,13 +847,13 @@ if CLIENT then
 
     function SWEP:ViewModelDrawn()
         --[[if (self.Status ~= 3) && (self.Status ~= 4) then
-            --drawAxis(self.Owner:GetPos() + Vector(0,0,50) + self.Owner:GetAimVector()*70, self.Owner:GetAngles())
+            --drawAxis(self:GetOwner():GetPos() + Vector(0,0,50) + self:GetOwner():GetAimVector()*70, self:GetOwner():GetAngles())
             drawAxis(Vector(48,-172,-12250), Angle(0,0,0))
             drawAxis(Vector(48,-172 + 2*30,-12250), Angle(90,0,0))
             drawAxis(Vector(48,-172 + 4*30,-12250), Angle(0,90,0))
             drawAxis(Vector(48,-172 + 6*30,-12250), Angle(0,0,90))
             
-            local ent = self.Owner:GetViewModel()
+            local ent = self:GetOwner():GetViewModel()
             local pos,ang,offset,res,height,z
             if ent:GetModel() == "models/weapons/v_c4.mdl" then
                 pos,ang = ent:GetBonePosition(ent:LookupBone("v_weapon.c4"))
@@ -870,7 +870,7 @@ if CLIENT then
                 else
                     offset = Vector(-1.58,4.6,2.7)
                 end
-                --local ang = self.Owner:GetAngles()
+                --local ang = self:GetOwner():GetAngles()
                 local ang = EyeAngles()
                 --local v = EyeAngles()
                 --local y = Vector(ang.pitch - v.pitch, ang.yaw - v.yaw, ang.roll - v.roll)
@@ -879,7 +879,7 @@ if CLIENT then
                 --offset = Vector(0,0,2.7)
                 drawOffset(pos, Vector(0,0,2.6), Angle(0,0,0))
                 drawOffset(pos, offset, ang)
-                local pp = self.Owner:GetPos()
+                local pp = self:GetOwner():GetPos()
                 --drawOffset(Vector(48,-172 - 2*30,-12230), Vector(0,0,-30), Angle(0,0,0))
                 --local a = ang:Forward()
                 --local b = LocalPlayer():GetAimVector()
