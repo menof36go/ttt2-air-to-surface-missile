@@ -93,16 +93,16 @@ function ENT:Explode()
         if IsValid(self.SWEP) then
             timer.Simple(0, function() self.SWEP:UnlockPlayer() end)
         end
-        if IsValid(self.Owner) then
-            self.Owner:SetViewEntity(self.Owner)
+        if IsValid(self:GetOwner()) then
+            self:GetOwner():SetViewEntity(self:GetOwner())
         end
 
         local baseDamage = GetConVar("ttt_asm_missile_blast_damage"):GetInt()
         local radius = GetConVar("ttt_asm_missile_blast_radius"):GetInt()
         local debug = GetConVar("ttt_asm_show_debug"):GetBool()
         local swep = ents.Create("swep_asm")
-        --print("Explode", self.Explosion, self, vPos, baseDamage, radius, self.Owner, swep, "ASM-Explosion", debug)
-        self.Explosion:Explode(self, vPos, baseDamage, radius, self.Owner, swep, "ASM-Explosion", debug)
+        --print("Explode", self.Explosion, self, vPos, baseDamage, radius, self:GetOwner(), swep, "ASM-Explosion", debug)
+        self.Explosion:Explode(self, vPos, baseDamage, radius, self:GetOwner(), swep, "ASM-Explosion", debug)
 
         util.ScreenShake(vPos, 15, 15, 4, 1000)
         util.Decal("Scorch", vPos+Vector(0,0,1), vPos-Vector(0,0,1))
