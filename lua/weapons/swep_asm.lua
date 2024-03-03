@@ -10,6 +10,7 @@ SWEP.DrawCrosshair = true
 SWEP.Base = "weapon_tttbase"
 SWEP.Kind = WEAPON_EQUIP1
 SWEP.CanBuy = { ROLE_TRAITOR }
+SWEP.LimitedStock = true
 SWEP.AutoSpawnable = false
 SWEP.AmmoEnt = "item_ammo_pistol_ttt"
 SWEP.InLoadoutFor = nil
