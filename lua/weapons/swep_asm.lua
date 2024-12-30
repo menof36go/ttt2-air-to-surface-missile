@@ -139,6 +139,9 @@ function SWEP:OnDrop()
         end
         self.Camera:Remove()
     end
+    if IsValid(ply) and not ply:Alive() then
+        self:SetStatus(6,0)
+    end
 end
 
 function SWEP:OnRemove()
@@ -206,6 +209,8 @@ if SERVER then
     util.AddNetworkString("ASM-Msg")
 
     function SWEP:PrimaryAttack()
+	self.AllowDrop = false
+
         if(self.Status == 0) then
             if self.Delay > CurTime() then return end
 
@@ -230,12 +235,15 @@ if SERVER then
         self:SetNextPrimaryFire(CurTime()+1)
     end
 
-    function SWEP:SecondaryAttack() end
+    function SWEP:SecondaryAttack() 
+	self.AllowDrop = true
+    end
 
     function SWEP:Reload() end
 
     function SWEP:Equip()
         --if !self.ModelC4 then self:SendMessage(0) end
+	self.AllowDrop = true
         if IsValid(self:GetOwner()) then
             self.UserID = self:GetOwner():UserID()
         end
@@ -254,6 +262,7 @@ if SERVER then
             self:SendWeaponAnim(ACT_VM_IDLE)
             self:SetStatus(3,0)
         elseif (self.Status>2) &&(self.Status<6) then
+	    if not IsValid(self.Camera) then return end
             local pos = self.Camera:GetPos()
             local tr = util.TraceLine({
                 start = pos,
