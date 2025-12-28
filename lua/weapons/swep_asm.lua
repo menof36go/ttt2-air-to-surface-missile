@@ -206,6 +206,7 @@ end
 
 if SERVER then
     util.AddNetworkString("ASM-Update")
+	util.AddNetworkString("ASM-Firstperson")
     util.AddNetworkString("ASM-Msg")
 
     function SWEP:PrimaryAttack()
@@ -219,7 +220,8 @@ if SERVER then
 
             if vPos then
                 self:SpawnCamera(vPos)
-                self:GetOwner():ConCommand("firstperson")
+                net.Start("ASM-Firstperson")
+                net.Send(self:GetOwner())
                 self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
                 self:GetOwner():SetAnimation(PLAYER_ATTACK1)
                 self:EmitSound(SndRequested)
@@ -630,6 +632,10 @@ if CLIENT then
                 ent.CountdownEnd = countdownEnd
             end
         end
+    end)
+
+	net.Receive("ASM-Firstperson", function()
+        RunConsoleCommand("firstperson", "1")
     end)
 
     net.Receive("ASM-Msg", function(len,ply) 
